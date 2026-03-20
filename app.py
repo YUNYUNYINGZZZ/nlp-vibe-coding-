@@ -172,14 +172,15 @@ def force_switch_app_lang(new_lang):
 st.markdown("### 🌐 选择解析语言 (Language)")
 lang_options = ["🇬🇧 英语 (English)", "🇨🇳 中文 (Chinese)"]
 
-if "app_lang_widget" in st.session_state and st.session_state.app_lang_widget != st.session_state.shared_lang:
-    st.session_state.app_lang_widget = st.session_state.shared_lang
-
-default_lang_idx = 0 if "English" in st.session_state.shared_lang else 1
+# 【修复状态冲突】
+if "anim_lang_widget" not in st.session_state:
+    st.session_state.anim_lang_widget = st.session_state.shared_lang
+elif st.session_state.anim_lang_widget != st.session_state.shared_lang:
+    st.session_state.anim_lang_widget = st.session_state.shared_lang
 
 app_lang = st.radio(
     "模型语言", lang_options, horizontal=True, label_visibility="collapsed",
-    key="app_lang_widget", on_change=sync_app_lang, index=default_lang_idx
+    key="anim_lang_widget", on_change=sync_anim_lang
 )
 lang_code = "en" if "English" in app_lang else "zh"
 
