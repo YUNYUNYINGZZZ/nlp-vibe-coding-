@@ -223,23 +223,29 @@ if not is_mismatch:
     with col_stack:
         st.markdown("#### 📚 栈 (Stack)")
         st.markdown("<span style='color:grey; font-size:12px'>已扫过的词（顶层在最上面）</span>", unsafe_allow_html=True)
-        for word in reversed(current_step['stack']):  
-            st.markdown(f"<div style='background-color:#ffeaa7; padding:10px; margin:5px; border-radius:5px; text-align:center; font-weight:bold; border: 2px solid #fdcb6e; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);'>{word}</div>", unsafe_allow_html=True)
-        if not current_step['stack']:
+        if current_step['stack']:
+            # 【修复重点】将循环渲染改为先拼接 HTML 字符串，再统一渲染，彻底杜绝前端 removeChild 报错
+            stack_html = "".join([f"<div style='background-color:#ffeaa7; padding:10px; margin:5px; border-radius:5px; text-align:center; font-weight:bold; border: 2px solid #fdcb6e; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);'>{word}</div>" for word in reversed(current_step['stack'])])
+            st.markdown(stack_html, unsafe_allow_html=True)
+        else:
             st.markdown("<div style='color:grey; text-align:center; padding:10px;'>(空)</div>", unsafe_allow_html=True)
 
     with col_buffer:
         st.markdown("#### ⏳ 缓存区 (Buffer)")
         st.markdown("<span style='color:grey; font-size:12px'>还没扫过的词（队首在最上面）</span>", unsafe_allow_html=True)
-        for word in current_step['buffer']:
-            st.markdown(f"<div style='background-color:#81ecec; padding:10px; margin:5px; border-radius:5px; text-align:center; font-weight:bold; border: 2px solid #00cec9; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);'>{word}</div>", unsafe_allow_html=True)
-        if not current_step['buffer']:
+        if current_step['buffer']:
+            # 同理进行字符串拼接
+            buffer_html = "".join([f"<div style='background-color:#81ecec; padding:10px; margin:5px; border-radius:5px; text-align:center; font-weight:bold; border: 2px solid #00cec9; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);'>{word}</div>" for word in current_step['buffer']])
+            st.markdown(buffer_html, unsafe_allow_html=True)
+        else:
             st.markdown("<div style='color:grey; text-align:center; padding:10px;'>(空)</div>", unsafe_allow_html=True)
 
     with col_arcs:
         st.markdown("#### 🌳 建立的依存关系")
         st.markdown("<span style='color:grey; font-size:12px'>老大哥(Head) 支配 小弟(Child)</span>", unsafe_allow_html=True)
-        for head, dep, label in current_step['arcs']:
-            st.markdown(f"<div style='background-color:#a29bfe; color:white; padding:10px; margin:5px; border-radius:5px; text-align:center; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);'><b>{head}</b> ──( {label} )──▶ <b>{dep}</b></div>", unsafe_allow_html=True)
-        if not current_step['arcs']:
+        if current_step['arcs']:
+            # 同理进行字符串拼接
+            arcs_html = "".join([f"<div style='background-color:#a29bfe; color:white; padding:10px; margin:5px; border-radius:5px; text-align:center; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);'><b>{head}</b> ──( {label} )──▶ <b>{dep}</b></div>" for head, dep, label in current_step['arcs']])
+            st.markdown(arcs_html, unsafe_allow_html=True)
+        else:
             st.markdown("<div style='color:grey; text-align:center; padding:10px;'>(暂无连线)</div>", unsafe_allow_html=True)
